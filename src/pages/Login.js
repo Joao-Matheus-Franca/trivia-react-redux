@@ -30,55 +30,55 @@ class Login extends React.Component {
     dispatch(fetchAPI());
     this.setState({ redirect: true });
   };
-  
-    settingsBtn = () => {
+
+  settingsBtn = () => {
     this.setState({ settings: true });
   };
 
   render() {
     const { isBtnDisabled, redirect, settings } = this.state;
     return (
-     settings ? <Redirect
+      settings ? <Redirect
         to={ { pathname: '/Configurações' } }
       /> : (
-      <>
-        <h1>Login</h1>
-        <label htmlFor="email">
-          E-mail:
-          <input
-            type="email"
-            name="email"
-            data-testid="input-gravatar-email"
-            onChange={ this.handleChange }
-          />
-        </label>
-        <label htmlFor="name">
-          Nome:
-          <input
-            type="text"
-            name="name"
-            data-testid="input-player-name"
-            onChange={ this.handleChange }
-          />
-        </label>
-        <button
-          type="button"
-          data-testid="btn-play"
-          disabled={ isBtnDisabled }
-          onClick={ this.handleClick }
-        >
-          Jogar
-        </button>
-        { redirect && <Redirect to="/jogo" /> }
-        <button
+        <>
+          <h1>Login</h1>
+          <label htmlFor="email">
+            E-mail:
+            <input
+              type="email"
+              name="email"
+              data-testid="input-gravatar-email"
+              onChange={ this.handleChange }
+            />
+          </label>
+          <label htmlFor="name">
+            Nome:
+            <input
+              type="text"
+              name="name"
+              data-testid="input-player-name"
+              onChange={ this.handleChange }
+            />
+          </label>
+          <button
+            type="button"
+            data-testid="btn-play"
+            disabled={ isBtnDisabled }
+            onClick={ this.handleClick }
+          >
+            Jogar
+          </button>
+          { redirect && <Redirect to="/jogo" /> }
+          <button
             type="button"
             data-testid="btn-settings"
             onClick={ this.settingsBtn }
           >
             settings
           </button>
-      </>
-       )
+        </>
+      )
     );
   }
 }
