@@ -1,10 +1,12 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 
 class Login extends React.Component {
   state = {
     name: '',
     email: '',
     isBtnDisabled: true,
+    settings: false,
   };
 
   handleChange = ({ target: { name, value } }) => {
@@ -19,37 +21,52 @@ class Login extends React.Component {
     return this.setState({ isBtnDisabled: true });
   };
 
+  settingsBtn = () => {
+    this.setState({ settings: true });
+  };
+
   render() {
-    const { isBtnDisabled } = this.state;
+    const { isBtnDisabled, settings } = this.state;
     return (
-      <>
-        <h1>Login</h1>
-        <label htmlFor="email">
-          E-mail:
-          <input
-            type="email"
-            name="email"
-            data-testid="input-gravatar-email"
-            onChange={ this.handleChange }
-          />
-        </label>
-        <label htmlFor="name">
-          Nome:
-          <input
-            type="text"
-            name="name"
-            data-testid="input-player-name"
-            onChange={ this.handleChange }
-          />
-        </label>
-        <button
-          type="button"
-          data-testid="btn-play"
-          disabled={ isBtnDisabled }
-        >
-          Jogar
-        </button>
-      </>
+      settings ? <Redirect
+        to={ { pathname: '/Configurações' } }
+      /> : (
+        <>
+          <h1>Login</h1>
+          <label htmlFor="email">
+            E-mail:
+            <input
+              type="email"
+              name="email"
+              data-testid="input-gravatar-email"
+              onChange={ this.handleChange }
+            />
+          </label>
+          <label htmlFor="name">
+            Nome:
+            <input
+              type="text"
+              name="name"
+              data-testid="input-player-name"
+              onChange={ this.handleChange }
+            />
+          </label>
+          <button
+            type="button"
+            data-testid="btn-play"
+            disabled={ isBtnDisabled }
+          >
+            Jogar
+          </button>
+          <button
+            type="button"
+            data-testid="btn-settings"
+            onClick={ this.settingsBtn }
+          >
+            settings
+          </button>
+        </>
+      )
     );
   }
 }
