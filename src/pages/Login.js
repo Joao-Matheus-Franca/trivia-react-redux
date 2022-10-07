@@ -10,6 +10,7 @@ class Login extends React.Component {
     email: '',
     isBtnDisabled: true,
     redirect: false,
+    settings: false,
   };
 
   handleChange = ({ target: { name, value } }) => {
@@ -29,10 +30,17 @@ class Login extends React.Component {
     dispatch(fetchAPI());
     this.setState({ redirect: true });
   };
+  
+    settingsBtn = () => {
+    this.setState({ settings: true });
+  };
 
   render() {
-    const { isBtnDisabled, redirect } = this.state;
+    const { isBtnDisabled, redirect, settings } = this.state;
     return (
+     settings ? <Redirect
+        to={ { pathname: '/Configurações' } }
+      /> : (
       <>
         <h1>Login</h1>
         <label htmlFor="email">
@@ -62,7 +70,15 @@ class Login extends React.Component {
           Jogar
         </button>
         { redirect && <Redirect to="/jogo" /> }
+        <button
+            type="button"
+            data-testid="btn-settings"
+            onClick={ this.settingsBtn }
+          >
+            settings
+          </button>
       </>
+       )
     );
   }
 }
