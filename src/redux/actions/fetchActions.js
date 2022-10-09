@@ -1,6 +1,7 @@
 const GET_TOKEN = 'GET_TOKEN';
 const GET_API = 'GET_API';
 const ERROR_API = 'ERROR_API';
+const GET_PLAYER_INFO = 'GET_PLAYER_INFO';
 
 const ENDPOINT = 'https://opentdb.com/api_token.php?command=request';
 
@@ -37,6 +38,13 @@ function fetchAPI() {
     if (dataQuestions.results.length > 0) {
       dispatch(requestAPI(dataQuestions.results));
     }
+  };
+}
+
+export function getPlayerInfo(info) {
+  return {
+    type: GET_PLAYER_INFO,
+    info,
   };
 }
 
