@@ -2,7 +2,7 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import fetchAPI from '../redux/actions/fetchActions';
+import fetchAPI, { getPlayerInfo } from '../redux/actions/fetchActions';
 
 class Login extends React.Component {
   state = {
@@ -28,6 +28,7 @@ class Login extends React.Component {
   handleClick = () => {
     const { dispatch } = this.props;
     dispatch(fetchAPI());
+    dispatch(getPlayerInfo(this.state));
     this.setState({ redirect: true });
   };
 
