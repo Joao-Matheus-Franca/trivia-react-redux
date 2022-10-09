@@ -62,7 +62,7 @@ body {
   }
 }
 
-#options {
-  display:flex;
+.options {
+  display: flex;
   flex-direction: column;
 }
