@@ -9,7 +9,6 @@ class Login extends React.Component {
     name: '',
     email: '',
     isBtnDisabled: true,
-    redirect: false,
     settings: false,
   };
 
@@ -29,7 +28,6 @@ class Login extends React.Component {
     const { dispatch } = this.props;
     dispatch(fetchAPI());
     dispatch(getPlayerInfo(this.state));
-    this.setState({ redirect: true });
   };
 
   settingsBtn = () => {
@@ -37,7 +35,8 @@ class Login extends React.Component {
   };
 
   render() {
-    const { isBtnDisabled, redirect, settings } = this.state;
+    const { isBtnDisabled, settings } = this.state;
+    const { redirect } = this.props;
     return (
       settings ? <Redirect
         to={ { pathname: '/Configurações' } }
@@ -84,8 +83,13 @@ class Login extends React.Component {
   }
 }
 
+const mapStateToProps = (state) => ({
+  redirect: state.questions.redirect,
+});
+
 Login.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  redirect: PropTypes.bool.isRequired,
 };
 
-export default connect()(Login);
+export default connect(mapStateToProps)(Login);
