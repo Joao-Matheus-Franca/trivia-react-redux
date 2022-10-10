@@ -42,6 +42,7 @@ class Game extends React.Component {
     // Coloquei esse log aqui porque vamos precisar dessas informações no futuro
     // e o lint tava reclamando que não tava sendo usado em nenhum lugar
     // então taquei elas num console.log pra não perder as informações
+    
     console.log(incorrectAnswers, target);
 
     btns.forEach((b) => {
