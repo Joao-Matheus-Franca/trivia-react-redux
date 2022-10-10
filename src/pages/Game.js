@@ -12,6 +12,7 @@ class Game extends React.Component {
     currentQuestionIndex: 0,
     isQuestionActive: true,
     scorre: 0,
+    assertions: 0,
   };
 
   componentDidMount() {
@@ -28,6 +29,7 @@ class Game extends React.Component {
   };
 
   nextQuestion = (i) => {
+    const { history } = this.props;
     const maxQuestions = 4;
     if (i < maxQuestions) {
       this.setState({ currentQuestionIndex: i + 1, isQuestionActive: true });
@@ -35,11 +37,19 @@ class Game extends React.Component {
       btns.forEach((b) => {
         b.className = 'answer-btn';
       });
+    } else {
+      history.push('/feedback');
     }
   };
 
   handleClick = ({ target }) => {
-    const { correctAnswers, incorrectAnswers, currentQuestionIndex } = this.state;
+    const {
+      correctAnswers,
+      incorrectAnswers,
+      currentQuestionIndex,
+      scorre,
+      assertions,
+    } = this.state;
     const btns = document.querySelectorAll('.answer-btn');
     const base = 10;
     let dificuldade = 0;
@@ -60,14 +70,14 @@ class Game extends React.Component {
     default:
       dificuldade = 0;
     }
-
-    const { correctAnswers, incorrectAnswers, scorre } = this.state;
     const { dispatch, timer } = this.props;
-    const btns = document.querySelectorAll('.answer-btn');
     if (target.getAttribute('data-testid') === 'correct-answer') {
-      const adicionar = scorre + (base + (timer * Number(dificuldade)));
-      this.setState({ scorre: adicionar });
-      dispatch(scoreSomar(scorre));
+      const adicionar = scorre + (base + timer * Number(dificuldade));
+      const assertionsSum = assertions + 1;
+      this.setState({ scorre: adicionar, assertions: assertionsSum }, () => {
+        const obj = { score: adicionar, assertions: assertionsSum };
+        dispatch(scoreSomar(obj));
+      });
     }
     // Coloquei esse log aqui porque vamos precisar dessas informações no futuro
     // e o lint tava reclamando que não tava sendo usado em nenhum lugar
@@ -84,13 +94,10 @@ class Game extends React.Component {
     });
     this.setState({ isQuestionActive: false });
   };
-  
-  render() {
-    const { currentQuestionIndex, isQuestionActive } = this.state;
-    
-  randomAnswer = () => {
 
+  randomAnswer = () => {
     const { questions } = this.props;
+    const { currentQuestionIndex } = this.state;
     const number = -1;
     const maxNumber = 1;
     const array = [
@@ -108,10 +115,10 @@ class Game extends React.Component {
 
   render() {
     const { questions, disabled } = this.props;
+    const { isQuestionActive, currentQuestionIndex } = this.state;
     return (
       <>
         <Header />
-
         <div className="quiz-container">
           <h3 data-testid="question-category">
             {questions[currentQuestionIndex].category}
@@ -120,8 +127,8 @@ class Game extends React.Component {
             {questions[currentQuestionIndex].question}
           </h2>
           <div data-testid="answer-options" className="options">
-           {this.randomAnswer().map((e, i) => {
-            if (e === questions[currentQuestionIndex].correct_answer) {
+            {this.randomAnswer().map((e, i) => {
+              if (e === questions[currentQuestionIndex].correct_answer) {
                 return (
                   <button
                     key={ i }
