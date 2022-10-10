@@ -114,7 +114,7 @@ class Game extends React.Component {
   };
 
   render() {
-    const { questions, disabled } = this.props;
+    const { questions, timer } = this.props;
     const { isQuestionActive, currentQuestionIndex } = this.state;
     return (
       <>
@@ -136,7 +136,7 @@ class Game extends React.Component {
                     data-testid="correct-answer"
                     onClick={ this.handleClick }
                     className="answer-btn"
-                    disabled={ disabled }
+                    disabled={ timer === 0 }
                   >
                     {e}
                   </button>
@@ -149,7 +149,7 @@ class Game extends React.Component {
                   data-testid={ `wrong-answer-${i}` }
                   onClick={ this.handleClick }
                   className="answer-btn"
-                  disabled={ disabled }
+                  disabled={ timer === 0 }
                 >
                   {e}
                 </button>
@@ -176,7 +176,6 @@ const mapStateToProps = (state) => ({
   questions: state.questions.data,
   scorre: state.player.scorre,
   acetos: state.player.assertions,
-  disabled: state.timer.btnDisabled,
   timer: state.timer.seconds,
 });
 
