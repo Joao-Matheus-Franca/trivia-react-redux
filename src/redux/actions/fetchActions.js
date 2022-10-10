@@ -2,8 +2,16 @@ const GET_TOKEN = 'GET_TOKEN';
 const GET_API = 'GET_API';
 const ERROR_API = 'ERROR_API';
 const GET_PLAYER_INFO = 'GET_PLAYER_INFO';
+const SCORRE_1 = 'SCORRE_1';
 
 const ENDPOINT = 'https://opentdb.com/api_token.php?command=request';
+
+export function scoreSomar(payload) {
+  return {
+    type: SCORRE_1,
+    payload,
+  };
+}
 
 function requestToken(token) {
   return {
