@@ -1,10 +1,9 @@
 const DISABLE_BUTTON = 'DISABLE_BUTTON';
 const SECONDS = 'SECONDS';
 
-export function timerSeconds(restante) {
+export function timerSeconds() {
   return {
     type: SECONDS,
-    value: restante,
   };
 }
 

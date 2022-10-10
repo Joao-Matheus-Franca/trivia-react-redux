@@ -1,52 +1,42 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { timerDisable, timerSeconds } from '../redux/actions/timerActions';
+import { timerSeconds } from '../redux/actions/timerActions';
 
 class Timer extends React.Component {
-  state = {
-    timer: 30,
+  componentDidMount() {
+    this.iniciar();
+  }
+
+  iniciar = () => {
+    const timeSubtraction = 1000;
+    return setInterval(() => {
+      this.controlTimer();
+    }, timeSubtraction);
   };
 
-  componentDidMount() {
-    const time = 500;
-    setTimeout(() => {
-      this.setState((prev) => ({ timer: prev.timer - 1 }));
-    }, time);
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    const time = nextState.timer < 0;
-    return !time;
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const { dispatch } = this.props;
-    const time = 500;
-    if (prevState.timer >= 0) {
-      setTimeout(() => {
-        this.setState({ timer: prevState.timer - 1 });
-        dispatch(timerSeconds(prevState.timer - 1));
-      }, time);
-    } if (prevState.timer === 0) {
-      dispatch(timerDisable());
+  controlTimer = () => {
+    const { dispatch, timer } = this.props;
+    if (timer > 0) {
+      dispatch(timerSeconds());
     }
-  }
+  };
 
   render() {
-    const { timer } = this.state;
+    const { timer } = this.props;
     return (
       <h4>{ timer }</h4>
     );
   }
 }
 
-Timer.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-};
-
 const mapStateToProps = (state) => ({
   timer: state.timer.seconds,
 });
+
+Timer.propTypes = {
+  timer: PropTypes.number.isRequired,
+  dispatch: PropTypes.func.isRequired,
+};
 
 export default connect(mapStateToProps, null)(Timer);

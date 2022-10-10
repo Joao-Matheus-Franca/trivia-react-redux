@@ -8,7 +8,7 @@ function questions(state = INITIAL_STATE, action) {
   case 'SECONDS': {
     return {
       ...state,
-      seconds: action.value,
+      seconds: state.seconds - 1,
     };
   }
   case 'DISABLE_BUTTON': {
