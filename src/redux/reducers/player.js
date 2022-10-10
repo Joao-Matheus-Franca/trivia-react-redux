@@ -17,6 +17,11 @@ function player(state = INITIAL_STATE, action) {
       name: action.info.name,
       gravatarEmail: action.info.email,
     };
+  case 'SCORRE_1':
+    return {
+      ...state,
+      score: action.payload,
+    };
   default: {
     return state;
   }
