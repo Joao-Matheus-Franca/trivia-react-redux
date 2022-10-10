@@ -27,7 +27,6 @@ class Game extends React.Component {
 
   handleClick = ({ target }) => {
     const base = 10;
-    const timer = 30;
     let dificuldade = 0;
     const { questions } = this.props;
     console.log(questions[0].difficulty);
@@ -49,11 +48,9 @@ class Game extends React.Component {
     }
 
     const { correctAnswers, incorrectAnswers, scorre } = this.state;
-    const { dispatch } = this.props;
+    const { dispatch, timer } = this.props;
     const btns = document.querySelectorAll('.answer-btn');
     if (target.getAttribute('data-testid') === 'correct-answer') {
-    // problema mais ou menoos feito falta implementar a logica de maior pontuação dependendo do tempo * dificuldade
-
       const adicionar = scorre + (base + (timer * Number(dificuldade)));
       this.setState({ scorre: adicionar });
       dispatch(scoreSomar(scorre));
@@ -137,6 +134,7 @@ const mapStateToProps = (state) => ({
   scorre: state.player.scorre,
   acetos: state.player.assertions,
   disabled: state.timer.btnDisabled,
+  timer: state.timer.seconds,
 });
 
 Game.propTypes = {
@@ -147,6 +145,7 @@ Game.propTypes = {
   incorrect_answers: PropTypes.arrayOf,
   scorre: PropTypes.number,
   assertions: PropTypes.number,
+  timer: PropTypes.number,
 }.isRequired;
 
 export default connect(mapStateToProps)(Game);
