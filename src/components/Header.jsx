@@ -10,10 +10,17 @@ class Header extends React.Component {
     const tokenSrc = `https://www.gravatar.com/avatar/${hash}`;
     return (
       <div>
-        <p>Jogo</p>
-        <p data-testid="header-player-name">{ name }</p>
-        <img src={ tokenSrc } alt={ hash } data-testid="header-profile-picture" />
-        <p data-testid="header-score">{ score }</p>
+        <header>
+          <h1>TRYBETRIVIA</h1>
+          <p data-testid="header-player-name">{name}</p>
+          <img
+            src={ tokenSrc }
+            alt={ hash }
+            className="avatar-img"
+            data-testid="header-profile-picture"
+          />
+          <p data-testid="header-score">{score}</p>
+        </header>
       </div>
     );
   }

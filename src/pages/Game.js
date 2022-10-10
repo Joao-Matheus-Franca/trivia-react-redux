@@ -9,7 +9,10 @@ class Game extends React.Component {
   state = {
     correctAnswers: [],
     incorrectAnswers: [],
+    currentQuestionIndex: 0,
+    isQuestionActive: true,
     scorre: 0,
+    assertions: 0,
   };
 
   componentDidMount() {
@@ -25,7 +28,29 @@ class Game extends React.Component {
     this.setState({ correctAnswers: corrects, incorrectAnswers: incorrects });
   };
 
+  nextQuestion = (i) => {
+    const { history } = this.props;
+    const maxQuestions = 4;
+    if (i < maxQuestions) {
+      this.setState({ currentQuestionIndex: i + 1, isQuestionActive: true });
+      const btns = document.querySelectorAll('.answer-btn');
+      btns.forEach((b) => {
+        b.className = 'answer-btn';
+      });
+    } else {
+      history.push('/feedback');
+    }
+  };
+
   handleClick = ({ target }) => {
+    const {
+      correctAnswers,
+      incorrectAnswers,
+      currentQuestionIndex,
+      scorre,
+      assertions,
+    } = this.state;
+    const btns = document.querySelectorAll('.answer-btn');
     const base = 10;
     let dificuldade = 0;
     const { questions } = this.props;
@@ -39,21 +64,20 @@ class Game extends React.Component {
     case 'medium':
       dificuldade = 2;
       break;
-
     case 'hard':
       dificuldade = '3';
       break;
     default:
       dificuldade = 0;
     }
-
-    const { correctAnswers, incorrectAnswers, scorre } = this.state;
     const { dispatch, timer } = this.props;
-    const btns = document.querySelectorAll('.answer-btn');
     if (target.getAttribute('data-testid') === 'correct-answer') {
-      const adicionar = scorre + (base + (timer * Number(dificuldade)));
-      this.setState({ scorre: adicionar });
-      dispatch(scoreSomar(scorre));
+      const adicionar = scorre + (base + timer * Number(dificuldade));
+      const assertionsSum = assertions + 1;
+      this.setState({ scorre: adicionar, assertions: assertionsSum }, () => {
+        const obj = { score: adicionar, assertions: assertionsSum };
+        dispatch(scoreSomar(obj));
+      });
     }
     // Coloquei esse log aqui porque vamos precisar dessas informações no futuro
     // e o lint tava reclamando que não tava sendo usado em nenhum lugar
@@ -62,20 +86,23 @@ class Game extends React.Component {
     console.log(incorrectAnswers, target);
 
     btns.forEach((b) => {
-      if (correctAnswers.some((a) => a === b.innerText)) {
-        return b.classList.add('correta');
+      if (correctAnswers[currentQuestionIndex] === b.innerText) {
+        b.className = 'answer-btn correta';
+      } else {
+        b.className = 'answer-btn incorreta';
       }
-      return b.classList.add('incorreta');
     });
+    this.setState({ isQuestionActive: false });
   };
 
   randomAnswer = () => {
     const { questions } = this.props;
+    const { currentQuestionIndex } = this.state;
     const number = -1;
     const maxNumber = 1;
     const array = [
-      questions[0].correct_answer,
-      ...questions[0].incorrect_answers,
+      questions[currentQuestionIndex].correct_answer,
+      ...questions[currentQuestionIndex].incorrect_answers,
     ];
     array.sort(() => {
       if (Math.round(Math.random()) === maxNumber) {
@@ -88,19 +115,38 @@ class Game extends React.Component {
 
   render() {
     const { questions, timer } = this.props;
+    const { isQuestionActive, currentQuestionIndex } = this.state;
     return (
       <>
         <Header />
-        <h3 data-testid="question-category">{questions[0].category}</h3>
-        <h2 data-testid="question-text">{questions[0].question}</h2>
-        <div data-testid="answer-options" className="options">
-          {this.randomAnswer().map((e, i) => {
-            if (e === questions[0].correct_answer) {
+        <div className="quiz-container">
+          <h3 data-testid="question-category">
+            {questions[currentQuestionIndex].category}
+          </h3>
+          <h2 data-testid="question-text">
+            {questions[currentQuestionIndex].question}
+          </h2>
+          <div data-testid="answer-options" className="options">
+            {this.randomAnswer().map((e, i) => {
+              if (e === questions[currentQuestionIndex].correct_answer) {
+                return (
+                  <button
+                    key={ i }
+                    type="button"
+                    data-testid="correct-answer"
+                    onClick={ this.handleClick }
+                    className="answer-btn"
+                    disabled={ timer === 0 }
+                  >
+                    {e}
+                  </button>
+                );
+              }
               return (
                 <button
                   key={ i }
                   type="button"
-                  data-testid="correct-answer"
+                  data-testid={ `wrong-answer-${i}` }
                   onClick={ this.handleClick }
                   className="answer-btn"
                   disabled={ timer === 0 }
@@ -108,20 +154,17 @@ class Game extends React.Component {
                   {e}
                 </button>
               );
-            }
-            return (
-              <button
-                key={ i }
-                type="button"
-                data-testid={ `wrong-answer-${i}` }
-                onClick={ this.handleClick }
-                className="answer-btn"
-                disabled={ timer === 0 }
-              >
-                {e}
-              </button>
-            );
-          })}
+            })}
+          </div>
+          {!isQuestionActive && (
+            <button
+              type="button"
+              onClick={ () => this.nextQuestion(currentQuestionIndex) }
+              data-testid="btn-next"
+            >
+              Next
+            </button>
+          )}
           <Timer />
         </div>
       </>
