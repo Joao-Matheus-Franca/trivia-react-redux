@@ -20,7 +20,8 @@ function player(state = INITIAL_STATE, action) {
   case 'SCORRE_1':
     return {
       ...state,
-      score: action.payload,
+      score: action.obj.score,
+      assertions: action.obj.assertions,
     };
   default: {
     return state;

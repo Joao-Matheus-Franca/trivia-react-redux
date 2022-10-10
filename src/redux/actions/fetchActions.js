@@ -6,10 +6,10 @@ const SCORRE_1 = 'SCORRE_1';
 
 const ENDPOINT = 'https://opentdb.com/api_token.php?command=request';
 
-export function scoreSomar(payload) {
+export function scoreSomar(obj) {
   return {
     type: SCORRE_1,
-    payload,
+    obj,
   };
 }
 

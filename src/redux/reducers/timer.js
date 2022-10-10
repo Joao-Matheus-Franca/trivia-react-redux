@@ -12,7 +12,7 @@ function questions(state = INITIAL_STATE, action) {
     };
   }
   case 'DISABLE_BUTTON': {
-    return { btnDisabled: true };
+    return { ...state, btnDisabled: true };
   }
   default: {
     return state;
