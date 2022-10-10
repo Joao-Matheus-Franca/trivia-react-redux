@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Header from '../components/Header';
+import { scoreSomar } from '../redux/actions/fetchActions';
+import Timer from '../components/Timer';
 
 class Game extends React.Component {
   state = {
@@ -9,6 +11,7 @@ class Game extends React.Component {
     incorrectAnswers: [],
     currentQuestionIndex: 0,
     isQuestionActive: true,
+    scorre: 0,
   };
 
   componentDidMount() {
@@ -38,7 +41,34 @@ class Game extends React.Component {
   handleClick = ({ target }) => {
     const { correctAnswers, incorrectAnswers, currentQuestionIndex } = this.state;
     const btns = document.querySelectorAll('.answer-btn');
+    const base = 10;
+    let dificuldade = 0;
+    const { questions } = this.props;
+    console.log(questions[0].difficulty);
 
+    // logica incompleta pq eu estou usando o mesma pergunta
+    switch (questions[0].difficulty) {
+    case 'easy':
+      dificuldade = 1;
+      break;
+    case 'medium':
+      dificuldade = 2;
+      break;
+    case 'hard':
+      dificuldade = '3';
+      break;
+    default:
+      dificuldade = 0;
+    }
+
+    const { correctAnswers, incorrectAnswers, scorre } = this.state;
+    const { dispatch, timer } = this.props;
+    const btns = document.querySelectorAll('.answer-btn');
+    if (target.getAttribute('data-testid') === 'correct-answer') {
+      const adicionar = scorre + (base + (timer * Number(dificuldade)));
+      this.setState({ scorre: adicionar });
+      dispatch(scoreSomar(scorre));
+    }
     // Coloquei esse log aqui porque vamos precisar dessas informações no futuro
     // e o lint tava reclamando que não tava sendo usado em nenhum lugar
     // então taquei elas num console.log pra não perder as informações
@@ -54,9 +84,12 @@ class Game extends React.Component {
     });
     this.setState({ isQuestionActive: false });
   };
-
+  
   render() {
     const { currentQuestionIndex, isQuestionActive } = this.state;
+    
+  randomAnswer = () => {
+
     const { questions } = this.props;
     const number = -1;
     const maxNumber = 1;
@@ -70,9 +103,15 @@ class Game extends React.Component {
       }
       return number * number;
     });
+    return array;
+  };
+
+  render() {
+    const { questions, disabled } = this.props;
     return (
       <>
         <Header />
+
         <div className="quiz-container">
           <h3 data-testid="question-category">
             {questions[currentQuestionIndex].category}
@@ -81,8 +120,8 @@ class Game extends React.Component {
             {questions[currentQuestionIndex].question}
           </h2>
           <div data-testid="answer-options" className="options">
-            {array.map((e, i) => {
-              if (e === questions[currentQuestionIndex].correct_answer) {
+           {this.randomAnswer().map((e, i) => {
+            if (e === questions[currentQuestionIndex].correct_answer) {
                 return (
                   <button
                     key={ i }
@@ -90,6 +129,7 @@ class Game extends React.Component {
                     data-testid="correct-answer"
                     onClick={ this.handleClick }
                     className="answer-btn"
+                    disabled={ disabled }
                   >
                     {e}
                   </button>
@@ -102,6 +142,7 @@ class Game extends React.Component {
                   data-testid={ `wrong-answer-${i}` }
                   onClick={ this.handleClick }
                   className="answer-btn"
+                  disabled={ disabled }
                 >
                   {e}
                 </button>
@@ -117,6 +158,7 @@ class Game extends React.Component {
               Next
             </button>
           )}
+          <Timer />
         </div>
       </>
     );
@@ -125,6 +167,10 @@ class Game extends React.Component {
 
 const mapStateToProps = (state) => ({
   questions: state.questions.data,
+  scorre: state.player.scorre,
+  acetos: state.player.assertions,
+  disabled: state.timer.btnDisabled,
+  timer: state.timer.seconds,
 });
 
 Game.propTypes = {
@@ -133,6 +179,9 @@ Game.propTypes = {
   question: PropTypes.string,
   correct_answer: PropTypes.string,
   incorrect_answers: PropTypes.arrayOf,
+  scorre: PropTypes.number,
+  assertions: PropTypes.number,
+  timer: PropTypes.number,
 }.isRequired;
 
 export default connect(mapStateToProps)(Game);
