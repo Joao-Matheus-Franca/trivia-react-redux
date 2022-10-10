@@ -7,6 +7,8 @@ class Game extends React.Component {
   state = {
     correctAnswers: [],
     incorrectAnswers: [],
+    currentQuestionIndex: 0,
+    isQuestionActive: true,
   };
 
   componentDidMount() {
@@ -22,8 +24,19 @@ class Game extends React.Component {
     this.setState({ correctAnswers: corrects, incorrectAnswers: incorrects });
   };
 
+  nextQuestion = (i) => {
+    const maxQuestions = 4;
+    if (i < maxQuestions) {
+      this.setState({ currentQuestionIndex: i + 1, isQuestionActive: true });
+      const btns = document.querySelectorAll('.answer-btn');
+      btns.forEach((b) => {
+        b.className = 'answer-btn';
+      });
+    }
+  };
+
   handleClick = ({ target }) => {
-    const { correctAnswers, incorrectAnswers } = this.state;
+    const { correctAnswers, incorrectAnswers, currentQuestionIndex } = this.state;
     const btns = document.querySelectorAll('.answer-btn');
 
     // Coloquei esse log aqui porque vamos precisar dessas informações no futuro
@@ -32,20 +45,23 @@ class Game extends React.Component {
     console.log(incorrectAnswers, target);
 
     btns.forEach((b) => {
-      if (correctAnswers.some((a) => a === b.innerText)) {
-        return b.classList.add('correta');
+      if (correctAnswers[currentQuestionIndex] === b.innerText) {
+        b.className = 'answer-btn correta';
+      } else {
+        b.className = 'answer-btn incorreta';
       }
-      return b.classList.add('incorreta');
     });
+    this.setState({ isQuestionActive: false });
   };
 
   render() {
+    const { currentQuestionIndex, isQuestionActive } = this.state;
     const { questions } = this.props;
     const number = -1;
     const maxNumber = 1;
     const array = [
-      questions[0].correct_answer,
-      ...questions[0].incorrect_answers,
+      questions[currentQuestionIndex].correct_answer,
+      ...questions[currentQuestionIndex].incorrect_answers,
     ];
     array.sort(() => {
       if (Math.round(Math.random()) === maxNumber) {
@@ -56,35 +72,50 @@ class Game extends React.Component {
     return (
       <>
         <Header />
-        <h3 data-testid="question-category">{questions[0].category}</h3>
-        <h2 data-testid="question-text">{questions[0].question}</h2>
-        <div data-testid="answer-options" className="options">
-          {array.map((e, i) => {
-            if (e === questions[0].correct_answer) {
+        <div className="quiz-container">
+          <h3 data-testid="question-category">
+            {questions[currentQuestionIndex].category}
+          </h3>
+          <h2 data-testid="question-text">
+            {questions[currentQuestionIndex].question}
+          </h2>
+          <div data-testid="answer-options" className="options">
+            {array.map((e, i) => {
+              if (e === questions[currentQuestionIndex].correct_answer) {
+                return (
+                  <button
+                    key={ i }
+                    type="button"
+                    data-testid="correct-answer"
+                    onClick={ this.handleClick }
+                    className="answer-btn"
+                  >
+                    {e}
+                  </button>
+                );
+              }
               return (
                 <button
                   key={ i }
                   type="button"
-                  data-testid="correct-answer"
+                  data-testid={ `wrong-answer-${i}` }
                   onClick={ this.handleClick }
                   className="answer-btn"
                 >
                   {e}
                 </button>
               );
-            }
-            return (
-              <button
-                key={ i }
-                type="button"
-                data-testid={ `wrong-answer-${i}` }
-                onClick={ this.handleClick }
-                className="answer-btn"
-              >
-                {e}
-              </button>
-            );
-          })}
+            })}
+          </div>
+          {!isQuestionActive && (
+            <button
+              type="button"
+              onClick={ () => this.nextQuestion(currentQuestionIndex) }
+              data-testid="btn-next"
+            >
+              Next
+            </button>
+          )}
         </div>
       </>
     );
