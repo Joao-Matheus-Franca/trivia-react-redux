@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Header from '../components/Header';
+import Timer from '../components/Timer';
 
 class Game extends React.Component {
   state = {
@@ -26,9 +27,6 @@ class Game extends React.Component {
     const { correctAnswers, incorrectAnswers } = this.state;
     const btns = document.querySelectorAll('.answer-btn');
 
-    // Coloquei esse log aqui porque vamos precisar dessas informações no futuro
-    // e o lint tava reclamando que não tava sendo usado em nenhum lugar
-    // então taquei elas num console.log pra não perder as informações
     console.log(incorrectAnswers, target);
 
     btns.forEach((b) => {
@@ -39,7 +37,7 @@ class Game extends React.Component {
     });
   };
 
-  render() {
+  randomAnswer = () => {
     const { questions } = this.props;
     const number = -1;
     const maxNumber = 1;
@@ -53,13 +51,18 @@ class Game extends React.Component {
       }
       return number * number;
     });
+    return array;
+  };
+
+  render() {
+    const { questions, disabled } = this.props;
     return (
       <>
         <Header />
         <h3 data-testid="question-category">{questions[0].category}</h3>
         <h2 data-testid="question-text">{questions[0].question}</h2>
         <div data-testid="answer-options" className="options">
-          {array.map((e, i) => {
+          {this.randomAnswer().map((e, i) => {
             if (e === questions[0].correct_answer) {
               return (
                 <button
@@ -68,6 +71,7 @@ class Game extends React.Component {
                   data-testid="correct-answer"
                   onClick={ this.handleClick }
                   className="answer-btn"
+                  disabled={ disabled }
                 >
                   {e}
                 </button>
@@ -80,11 +84,13 @@ class Game extends React.Component {
                 data-testid={ `wrong-answer-${i}` }
                 onClick={ this.handleClick }
                 className="answer-btn"
+                disabled={ disabled }
               >
                 {e}
               </button>
             );
           })}
+          <Timer />
         </div>
       </>
     );
@@ -93,6 +99,7 @@ class Game extends React.Component {
 
 const mapStateToProps = (state) => ({
   questions: state.questions.data,
+  disabled: state.timer.btnDisabled,
 });
 
 Game.propTypes = {
