@@ -89,7 +89,7 @@ class Game extends React.Component {
     console.log(incorrectAnswers, target);
 
     btns.forEach((b) => {
-      if (correctAnswers[currentQuestionIndex] === b.innerText) {
+      if (correctAnswers[currentQuestionIndex].match(b.innerText)) {
         b.className = 'answer-btn correta';
       } else {
         b.className = 'answer-btn incorreta';
