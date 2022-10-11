@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
+import { playAgain } from '../redux/actions/fetchActions';
 
 class Feedback extends Component {
   playAgain = () => {
-    const { history } = this.props;
+    const { history, dispatch } = this.props;
+    dispatch(playAgain());
     history.push('/');
   };
 
@@ -53,6 +55,7 @@ const mapStateToProps = (state) => ({
 
 Feedback.propTypes = {
   assertions: PropTypes.number.isRequired,
+  dispatch: PropTypes.func.isRequired,
   score: PropTypes.number.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
