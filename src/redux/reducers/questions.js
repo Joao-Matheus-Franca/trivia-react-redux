@@ -6,11 +6,14 @@ const INITIAL_STATE = {
 function questions(state = INITIAL_STATE, action) {
   switch (action.type) {
   case 'GET_API': {
-    return { data: action.json, redirect: true };
+    return { ...state, data: action.json, redirect: true };
   }
   case 'ERROR_API': {
     localStorage.setItem('token', '');
-    return { data: [] };
+    return { ...state, data: [] };
+  }
+  case 'PLAY_AGAIN': {
+    return { ...state, redirect: false };
   }
   default: {
     return state;
