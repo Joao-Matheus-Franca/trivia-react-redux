@@ -54,10 +54,10 @@ class Game extends React.Component {
     const base = 10;
     let dificuldade = 0;
     const { questions } = this.props;
-    console.log(questions[0].difficulty);
+    console.log(questions[currentQuestionIndex].difficulty);
 
     // logica incompleta pq eu estou usando o mesma pergunta
-    switch (questions[0].difficulty) {
+    switch (questions[currentQuestionIndex].difficulty) {
     case 'easy':
       dificuldade = 1;
       break;
