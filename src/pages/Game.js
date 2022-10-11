@@ -13,10 +13,12 @@ class Game extends React.Component {
     isQuestionActive: true,
     scorre: 0,
     assertions: 0,
+    everyAnswers: [],
   };
 
   componentDidMount() {
     this.teste();
+    this.randomAnswer(0);
   }
 
   teste = () => {
@@ -33,6 +35,7 @@ class Game extends React.Component {
     const maxQuestions = 4;
     if (i < maxQuestions) {
       this.setState({ currentQuestionIndex: i + 1, isQuestionActive: true });
+      this.randomAnswer(i + 1);
       const btns = document.querySelectorAll('.answer-btn');
       btns.forEach((b) => {
         b.className = 'answer-btn';
@@ -95,14 +98,13 @@ class Game extends React.Component {
     this.setState({ isQuestionActive: false });
   };
 
-  randomAnswer = () => {
+  randomAnswer = (i) => {
     const { questions } = this.props;
-    const { currentQuestionIndex } = this.state;
     const number = -1;
     const maxNumber = 1;
     const array = [
-      questions[currentQuestionIndex].correct_answer,
-      ...questions[currentQuestionIndex].incorrect_answers,
+      questions[i].correct_answer,
+      ...questions[i].incorrect_answers,
     ];
     array.sort(() => {
       if (Math.round(Math.random()) === maxNumber) {
@@ -110,12 +112,12 @@ class Game extends React.Component {
       }
       return number * number;
     });
-    return array;
+    this.setState({ everyAnswers: array });
   };
 
   render() {
     const { questions, timer } = this.props;
-    const { isQuestionActive, currentQuestionIndex } = this.state;
+    const { isQuestionActive, currentQuestionIndex, everyAnswers } = this.state;
     return (
       <>
         <Header />
@@ -127,7 +129,7 @@ class Game extends React.Component {
             {questions[currentQuestionIndex].question}
           </h2>
           <div data-testid="answer-options" className="options">
-            {this.randomAnswer().map((e, i) => {
+            {everyAnswers.map((e, i) => {
               if (e === questions[currentQuestionIndex].correct_answer) {
                 return (
                   <button
@@ -156,7 +158,7 @@ class Game extends React.Component {
               );
             })}
           </div>
-          {!isQuestionActive && (
+          {(!isQuestionActive || timer === 0) && (
             <button
               type="button"
               onClick={ () => this.nextQuestion(currentQuestionIndex) }
