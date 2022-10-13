@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import { scoreSomar } from '../redux/actions/fetchActions';
 import Timer from '../components/Timer';
 import { resetTimer, stopTimer } from '../redux/actions/timerActions';
+import { MD5 } from 'crypto-js';
 
 class Game extends React.Component {
   state = {
@@ -41,12 +42,33 @@ class Game extends React.Component {
         b.className = 'answer-btn';
       });
     } else {
+      this.sentToLocalStorage();
       history.push('/feedback');
     }
   };
 
+  sentToLocalStorage = () => {
+    const { scorre } = this.state;
+    const { gravatarEmail, name } = this.props;
+    const hash = MD5(gravatarEmail).toString();
+    const picture = `https://www.gravatar.com/avatar/${hash}`;
+    const storage = localStorage.getItem('ranking');
+    const playerData = { name, score: scorre, picture };
+
+    if (!storage) {
+      localStorage.setItem('ranking', JSON.stringify([playerData]));
+    } else {
+      const newStorage = JSON.parse(storage);
+      localStorage.setItem(
+        'ranking',
+        JSON.stringify([...newStorage, playerData]),
+      );
+    }
+  };
+
   handleClick = ({ target }) => {
-    const { correctAnswers, currentQuestionIndex, scorre, assertions } = this.state;
+    const { correctAnswers, currentQuestionIndex, scorre, assertions } =
+      this.state;
     const { dispatch, timer } = this.props;
     const btns = document.querySelectorAll('.answer-btn');
     const base = 10;
@@ -56,17 +78,17 @@ class Game extends React.Component {
 
     // logica incompleta pq eu estou usando o mesma pergunta
     switch (questions[currentQuestionIndex].difficulty) {
-    case 'easy':
-      dificuldade = 1;
-      break;
-    case 'medium':
-      dificuldade = 2;
-      break;
-    case 'hard':
-      dificuldade = '3';
-      break;
-    default:
-      dificuldade = 0;
+      case 'easy':
+        dificuldade = 1;
+        break;
+      case 'medium':
+        dificuldade = 2;
+        break;
+      case 'hard':
+        dificuldade = '3';
+        break;
+      default:
+        dificuldade = 0;
     }
     if (target.getAttribute('data-testid') === 'correct-answer') {
       const adicionar = scorre + (base + timer * Number(dificuldade));
@@ -127,12 +149,12 @@ class Game extends React.Component {
               if (e === questions[currentQuestionIndex].correct_answer) {
                 return (
                   <button
-                    key={ i }
+                    key={i}
                     type="button"
                     data-testid="correct-answer"
-                    onClick={ this.handleClick }
+                    onClick={this.handleClick}
                     className="answer-btn"
-                    disabled={ timer === 0 }
+                    disabled={timer === 0}
                   >
                     {e}
                   </button>
@@ -140,12 +162,12 @@ class Game extends React.Component {
               }
               return (
                 <button
-                  key={ i }
+                  key={i}
                   type="button"
-                  data-testid={ `wrong-answer-${i}` }
-                  onClick={ this.handleClick }
+                  data-testid={`wrong-answer-${i}`}
+                  onClick={this.handleClick}
                   className="answer-btn"
-                  disabled={ timer === 0 }
+                  disabled={timer === 0}
                 >
                   {e}
                 </button>
@@ -155,13 +177,13 @@ class Game extends React.Component {
           {(!isQuestionActive || timer === 0) && (
             <button
               type="button"
-              onClick={ () => this.nextQuestion(currentQuestionIndex) }
+              onClick={() => this.nextQuestion(currentQuestionIndex)}
               data-testid="btn-next"
             >
               Next
             </button>
           )}
-          <Timer timerOn={ timerOn } />
+          <Timer timerOn={timerOn} />
         </div>
       </>
     );
@@ -169,6 +191,8 @@ class Game extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
+  gravatarEmail: state.player.gravatarEmail,
+  name: state.player.name,
   questions: state.questions.data,
   scorre: state.player.scorre,
   acetos: state.player.assertions,
