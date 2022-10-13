@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { playAgain } from '../redux/actions/fetchActions';
-import RankingTable from "../components/RankingTable";
+import RankingTable from '../components/RankingTable';
 
 class Ranking extends React.Component {
   goHome = () => {
