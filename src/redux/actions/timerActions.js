@@ -12,3 +12,15 @@ export function timerDisable() {
     type: DISABLE_BUTTON,
   };
 }
+
+export function stopTimer() {
+  return {
+    type: 'STOP_TIMER',
+  };
+}
+
+export function resetTimer() {
+  return {
+    type: 'RESET_TIMER',
+  };
+}

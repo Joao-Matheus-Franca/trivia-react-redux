@@ -2,12 +2,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
-import { playAgain } from '../redux/actions/fetchActions';
+import { playAgain, resetPlayer } from '../redux/actions/fetchActions';
+import { stopTimer } from '../redux/actions/timerActions';
 
 class Feedback extends Component {
   playAgain = () => {
     const { history, dispatch } = this.props;
     dispatch(playAgain());
+    dispatch(stopTimer());
+    dispatch(resetPlayer());
     history.push('/');
   };
 

@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import fetchAPI, { getPlayerInfo } from '../redux/actions/fetchActions';
+import { resetTimer } from '../redux/actions/timerActions';
 
 class Login extends React.Component {
   state = {
@@ -28,6 +29,7 @@ class Login extends React.Component {
     const { dispatch } = this.props;
     dispatch(fetchAPI());
     dispatch(getPlayerInfo(this.state));
+    dispatch(resetTimer());
   };
 
   settingsBtn = () => {
@@ -37,48 +39,46 @@ class Login extends React.Component {
   render() {
     const { isBtnDisabled, settings } = this.state;
     const { redirect } = this.props;
-    return (
-      settings ? <Redirect
-        to={ { pathname: '/Configurações' } }
-      /> : (
-        <>
-          <h1>Login</h1>
-          <label htmlFor="email">
-            E-mail:
-            <input
-              type="email"
-              name="email"
-              data-testid="input-gravatar-email"
-              onChange={ this.handleChange }
-            />
-          </label>
-          <label htmlFor="name">
-            Nome:
-            <input
-              type="text"
-              name="name"
-              data-testid="input-player-name"
-              onChange={ this.handleChange }
-            />
-          </label>
-          <button
-            type="button"
-            data-testid="btn-play"
-            disabled={ isBtnDisabled }
-            onClick={ this.handleClick }
-          >
-            Jogar
-          </button>
-          { redirect && <Redirect to="/jogo" /> }
-          <button
-            type="button"
-            data-testid="btn-settings"
-            onClick={ this.settingsBtn }
-          >
-            settings
-          </button>
-        </>
-      )
+    return settings ? (
+      <Redirect to={ { pathname: '/Configurações' } } />
+    ) : (
+      <>
+        <h1>Login</h1>
+        <label htmlFor="email">
+          E-mail:
+          <input
+            type="email"
+            name="email"
+            data-testid="input-gravatar-email"
+            onChange={ this.handleChange }
+          />
+        </label>
+        <label htmlFor="name">
+          Nome:
+          <input
+            type="text"
+            name="name"
+            data-testid="input-player-name"
+            onChange={ this.handleChange }
+          />
+        </label>
+        <button
+          type="button"
+          data-testid="btn-play"
+          disabled={ isBtnDisabled }
+          onClick={ this.handleClick }
+        >
+          Jogar
+        </button>
+        {redirect && <Redirect to="/jogo" />}
+        <button
+          type="button"
+          data-testid="btn-settings"
+          onClick={ this.settingsBtn }
+        >
+          settings
+        </button>
+      </>
     );
   }
 }

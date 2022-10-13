@@ -39,7 +39,9 @@ function fetchAPI() {
     const response = await fetch(ENDPOINT);
     const token = await response.json();
     dispatch(requestToken(token.token));
-    const fetchQuestions = await fetch(`https://opentdb.com/api.php?amount=5&token=${token.token}`);
+    const fetchQuestions = await fetch(
+      `https://opentdb.com/api.php?amount=5&token=${token.token}`,
+    );
     const dataQuestions = await fetchQuestions.json();
     if (dataQuestions.results.length === 0) {
       dispatch(errorAPI());
@@ -53,6 +55,12 @@ function fetchAPI() {
 export function playAgain() {
   return {
     type: PLAY_AGAIN,
+  };
+}
+
+export function resetPlayer() {
+  return {
+    type: 'RESET_PLAYER',
   };
 }
 

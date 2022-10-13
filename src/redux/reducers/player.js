@@ -23,6 +23,12 @@ function player(state = INITIAL_STATE, action) {
       score: action.obj.score,
       assertions: action.obj.assertions,
     };
+  case 'RESET_PLAYER':
+    return {
+      ...state,
+      score: 0,
+      assertions: 0,
+    };
   default: {
     return state;
   }

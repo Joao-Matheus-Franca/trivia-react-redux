@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import Header from '../components/Header';
 import { scoreSomar } from '../redux/actions/fetchActions';
 import Timer from '../components/Timer';
+import { resetTimer, stopTimer } from '../redux/actions/timerActions';
 
 class Game extends React.Component {
   state = {
     correctAnswers: [],
-    incorrectAnswers: [],
     currentQuestionIndex: 0,
     isQuestionActive: true,
     scorre: 0,
@@ -25,14 +25,14 @@ class Game extends React.Component {
     const { questions } = this.props;
 
     const corrects = questions.map((q) => q.correct_answer);
-    const incorrects = questions.map((q) => q.incorrect_answers);
 
-    this.setState({ correctAnswers: corrects, incorrectAnswers: incorrects });
+    this.setState({ correctAnswers: corrects });
   };
 
   nextQuestion = (i) => {
-    const { history } = this.props;
+    const { history, dispatch } = this.props;
     const maxQuestions = 4;
+    dispatch(resetTimer());
     if (i < maxQuestions) {
       this.setState({ currentQuestionIndex: i + 1, isQuestionActive: true });
       this.randomAnswer(i + 1);
@@ -46,18 +46,13 @@ class Game extends React.Component {
   };
 
   handleClick = ({ target }) => {
-    const {
-      correctAnswers,
-      incorrectAnswers,
-      currentQuestionIndex,
-      scorre,
-      assertions,
-    } = this.state;
+    const { correctAnswers, currentQuestionIndex, scorre, assertions } = this.state;
+    const { dispatch, timer } = this.props;
     const btns = document.querySelectorAll('.answer-btn');
     const base = 10;
     let dificuldade = 0;
     const { questions } = this.props;
-    console.log(questions[currentQuestionIndex].difficulty);
+    dispatch(stopTimer());
 
     // logica incompleta pq eu estou usando o mesma pergunta
     switch (questions[currentQuestionIndex].difficulty) {
@@ -73,7 +68,6 @@ class Game extends React.Component {
     default:
       dificuldade = 0;
     }
-    const { dispatch, timer } = this.props;
     if (target.getAttribute('data-testid') === 'correct-answer') {
       const adicionar = scorre + (base + timer * Number(dificuldade));
       const assertionsSum = assertions + 1;
@@ -86,7 +80,7 @@ class Game extends React.Component {
     // e o lint tava reclamando que não tava sendo usado em nenhum lugar
     // então taquei elas num console.log pra não perder as informações
 
-    console.log(incorrectAnswers, target);
+    // console.log(incorrectAnswers, target);
 
     btns.forEach((b) => {
       if (correctAnswers[currentQuestionIndex].match(b.innerText)) {
@@ -116,7 +110,7 @@ class Game extends React.Component {
   };
 
   render() {
-    const { questions, timer } = this.props;
+    const { questions, timer, timerOn } = this.props;
     const { isQuestionActive, currentQuestionIndex, everyAnswers } = this.state;
     return (
       <>
@@ -167,7 +161,7 @@ class Game extends React.Component {
               Next
             </button>
           )}
-          <Timer />
+          <Timer timerOn={ timerOn } />
         </div>
       </>
     );
@@ -179,6 +173,7 @@ const mapStateToProps = (state) => ({
   scorre: state.player.scorre,
   acetos: state.player.assertions,
   timer: state.timer.seconds,
+  timerOn: state.timer.timerOn,
 });
 
 Game.propTypes = {
