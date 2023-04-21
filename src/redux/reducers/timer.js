@@ -1,6 +1,7 @@
 const INITIAL_STATE = {
   btnDisabled: false,
   seconds: 30,
+  timerOn: true,
 };
 
 function questions(state = INITIAL_STATE, action) {
@@ -11,8 +12,11 @@ function questions(state = INITIAL_STATE, action) {
       seconds: state.seconds - 1,
     };
   }
-  case 'DISABLE_BUTTON': {
-    return { ...state, btnDisabled: true };
+  case 'STOP_TIMER': {
+    return { ...state, timerOn: false };
+  }
+  case 'RESET_TIMER': {
+    return { ...state, seconds: 30, timerOn: true };
   }
   default: {
     return state;

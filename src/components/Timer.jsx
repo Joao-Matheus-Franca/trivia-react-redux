@@ -4,28 +4,20 @@ import { connect } from 'react-redux';
 import { timerSeconds } from '../redux/actions/timerActions';
 
 class Timer extends React.Component {
-  componentDidMount() {
-    this.iniciar();
-  }
-
   iniciar = () => {
-    const timeSubtraction = 1000;
-    return setInterval(() => {
-      this.controlTimer();
-    }, timeSubtraction);
-  };
-
-  controlTimer = () => {
-    const { dispatch, timer } = this.props;
-    if (timer > 0) {
-      dispatch(timerSeconds());
-    }
+    const { dispatch } = this.props;
+    const second = 1000;
+    setTimeout(() => dispatch(timerSeconds()), second);
   };
 
   render() {
-    const { timer } = this.props;
+    const { timer, timerOn } = this.props;
+
     return (
-      <h4>{ timer }</h4>
+      <div>
+        {timerOn && timer > 0 && this.iniciar()}
+        <h4>{timer}</h4>
+      </div>
     );
   }
 }
@@ -37,6 +29,7 @@ const mapStateToProps = (state) => ({
 Timer.propTypes = {
   timer: PropTypes.number.isRequired,
   dispatch: PropTypes.func.isRequired,
+  timerOn: PropTypes.bool.isRequired,
 };
 
 export default connect(mapStateToProps, null)(Timer);
